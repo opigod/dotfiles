@@ -7,6 +7,10 @@ Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,
 Switch to Next Keyboard Layout=Meta+Alt+K,Meta+Alt+K,
 _k_friendly_name=Keyboard Layout Switcher
 
+[applications]
+_k_friendly_name=Applications
+firefox-nightly=Meta+W,none,Firefox nightly
+
 [audio]
 AudioMicMute=Microphone Mute,Microphone Mute,Mute Microphone
 AudioMicVolumeDown=Microphone Volume Down,Microphone Volume Down,Microphone Volume Down
