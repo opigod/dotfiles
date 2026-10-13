@@ -22,7 +22,6 @@ cursorSize=16
 cursorTheme=Bibata-Modern-Ice
 
 [Plugins]
-blurEnabled=false
 hidecursorEnabled=true
 wobblywindowsEnabled=true
 
@@ -30,6 +29,7 @@ wobblywindowsEnabled=true
 DefaultLayout=AutoGrid
 GapBetween=15
 TilingBorderMode=AllWindows
+TilingCornerRadius=10
 
 [Tiling][06e08283-dfd3-4f2d-82e8-ea7adea08635][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
@@ -53,7 +53,7 @@ tiles={"layoutDirection":"floating","tiles":[]}
 
 [Tiling][45393b2d-0bc3-4c93-984d-a698c75778c6][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
-tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":0.5,"x":0,"y":0},{"height":1,"width":0.5,"x":0.5,"y":0}]}
+tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":1,"x":0,"y":0}]}
 
 [Tiling][45393b2d-0bc3-4c93-984d-a698c75778c6][de5340a0-01ee-49c6-899b-0823d13927a0]
 padding=4
