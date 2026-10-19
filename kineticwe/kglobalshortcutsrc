@@ -3,6 +3,8 @@ _k_friendly_name=Activity Manager
 switch-to-activity-288f3290-ccf5-458a-931d-8f1cd97cf69e=none,none,Switch to activity "Default"
 
 [KineticWE Keyboard Layout Switcher]
+Switch keyboard layout to Czech=none,none,Switch keyboard layout to Czech
+Switch keyboard layout to English (US)=none,none,Switch keyboard layout to English (US)
 Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,
 Switch to Next Keyboard Layout=Meta+Alt+K,Meta+Alt+K,
 _k_friendly_name=Keyboard Layout Switcher
