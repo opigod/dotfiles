@@ -22,6 +22,7 @@ cursorSize=16
 cursorTheme=Bibata-Modern-Ice
 
 [Plugins]
+blurEnabled=false
 hidecursorEnabled=true
 wobblywindowsEnabled=true
 
@@ -53,7 +54,7 @@ tiles={"layoutDirection":"floating","tiles":[]}
 
 [Tiling][2cc34ceb-6a50-41b0-8ee9-2bfbd6b72a67][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
-tiles={"layoutDirection":"floating","tiles":[]}
+tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":1,"x":0,"y":0}]}
 
 [Tiling][2cc34ceb-6a50-41b0-8ee9-2bfbd6b72a67][de5340a0-01ee-49c6-899b-0823d13927a0]
 padding=4
@@ -97,7 +98,7 @@ tiles={"layoutDirection":"floating","tiles":[]}
 
 [Tiling][cf87f1bb-2f83-4499-9f81-9b11c2c0a744][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
-tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":0.5,"x":0,"y":0},{"height":1,"width":0.5,"x":0.5,"y":0}]}
+tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":1,"x":0,"y":0}]}
 
 [Tiling][cf87f1bb-2f83-4499-9f81-9b11c2c0a744][de5340a0-01ee-49c6-899b-0823d13927a0]
 padding=4
