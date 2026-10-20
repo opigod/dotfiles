@@ -4,20 +4,6 @@
 
 A template for getting started with [AstroNvim](https://github.com/AstroNvim/AstroNvim)
 
-## 🔗 Dotfiles setup
-
-This configuration lives in the [dotfiles](https://github.com/opigod/dotfiles) repository. Symlink it into place instead of cloning it:
-
-```shell
-ln -s ~/dotfiles/nvim ~/.config/nvim
-```
-
-If `~/.config/nvim` already exists, move it out of the way first:
-
-```shell
-mv ~/.config/nvim ~/.config/nvim.bak
-```
-
 ## 🛠️ Installation
 
 #### Make a backup of your current nvim and shared folder
