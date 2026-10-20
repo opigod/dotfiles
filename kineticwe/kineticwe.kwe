@@ -22,7 +22,7 @@ cursorSize=16
 cursorTheme=Bibata-Modern-Ice
 
 [Plugins]
-blurEnabled=false
+blurEnabled=true
 hidecursorEnabled=true
 wobblywindowsEnabled=true
 
