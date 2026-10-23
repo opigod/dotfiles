@@ -245,6 +245,7 @@ push_to_talk=none,none,Push to talk
 
 [ksmserver]
 Halt Without Confirmation=none,none,Shut Down Without Confirmation
+Lock Session=Screensaver\tMeta+L,Screensaver\tMeta+L,Lock Session
 Log Out=Ctrl+Alt+Del,Ctrl+Alt+Del,Show Logout Screen
 Log Out Without Confirmation=none,none,Log Out Without Confirmation
 LogOut=none,none,Log Out
@@ -339,3 +340,16 @@ RecordWindow=none
 RectangularRegionScreenShot=Meta+Shift+S
 WindowUnderCursorScreenShot=none
 _launch=none
+
+[unisic]
+_k_friendly_name=Unisic
+capture-fullscreen=none,none,Capture full screen
+capture-region=Meta+Shift+S,Meta+Shift+2,Capture region
+capture-scroll=none,none,Capture scrolling region
+capture-window=none,none,Capture active window
+copy-last=Meta+Shift+C,Meta+Shift+C,Copy last capture
+instant-replay=Meta+Shift+I,Meta+Shift+I,Start/save instant replay
+ocr-region=Meta+Shift+T,Meta+Shift+T,OCR region (copy text)
+record-gif=Meta+Shift+G,Meta+Shift+G,Record GIF (start/stop)
+record-video=none,none,Record video (start/stop)
+stop-recording=Ctrl+Esc,none,Stop recording (emergency)

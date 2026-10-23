@@ -11,6 +11,15 @@ Name_5=Workspace 5
 Number=5
 Rows=5
 
+[Effect-blur]
+ForceBlurAll=true
+
+[Layout]
+DisplayNames=English (US),Czech
+LayoutList=us,cz
+Use=true
+VariantList=,
+
 [Libinput][1133][16552][Logitech PRO 2 MOUSE]
 PointerAccelerationProfile=1
 
@@ -22,7 +31,6 @@ cursorSize=16
 cursorTheme=Bibata-Modern-Ice
 
 [Plugins]
-blurEnabled=true
 hidecursorEnabled=true
 wobblywindowsEnabled=true
 
@@ -66,7 +74,7 @@ tiles={"layoutDirection":"floating","tiles":[]}
 
 [Tiling][45393b2d-0bc3-4c93-984d-a698c75778c6][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
-tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":1,"x":0,"y":0}]}
+tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":0.5,"x":0,"y":0},{"height":1,"width":0.5,"x":0.5,"y":0}]}
 
 [Tiling][45393b2d-0bc3-4c93-984d-a698c75778c6][de5340a0-01ee-49c6-899b-0823d13927a0]
 padding=4
@@ -113,8 +121,9 @@ padding=4
 tiles={"layoutDirection":"floating","tiles":[]}
 
 [Windows]
+DefaultActiveOpacity=100
 DefaultDecorationPolicy=0
-DefaultInactiveOpacity=80
+DefaultInactiveOpacity=100
 DelayFocusInterval=100
 FocusPolicy=FocusFollowsMouse
 InvertScrollDesktopSwitch=true

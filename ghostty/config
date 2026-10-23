@@ -15,6 +15,12 @@ palette = 13=#a277ff
 palette = 14=#61ffca
 palette = 15=#edecee
 background = #15141b
+# Let the KineticWE blur show through: without a surface alpha the window is
+# opaque and "Blur all windows" has nothing to reveal.
+background-opacity = 0.8
+# Also apply the opacity to cells with an explicit background color, so TUI
+# apps (nvim, tmux) don't paint opaque rectangles over the blur.
+background-opacity-cells = true
 foreground = #edecee
 cursor-color = #a277ff
 cursor-text = #edecee
