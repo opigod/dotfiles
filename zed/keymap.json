@@ -1,0 +1,13 @@
+// Zed keymap
+//
+// For information on how to configure keybindings, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // Start a new OpenCode (ACP) thread in the current project.
+      "ctrl-alt-o": ["agent::NewExternalAgentThread", { "agent": "opencode" }]
+    }
+  }
+]
