@@ -30,3 +30,4 @@ custom-shader = shaders/cursor_smear.glsl
 custom-shader = shaders/sonic_boom_cursor.glsl
 custom-shader = shaders/cursor_glow.glsl
 custom-shader-animation = always
+font-family = JetBrainsMono Nerd Font
