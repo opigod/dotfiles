@@ -1,0 +1,23 @@
+id = "vesper-blur"
+name = "Vesper Blur"
+version = "0.1.1"
+schema_version = 1
+description = "Vesper dark theme with blur/transparency effects. Peppermint and orange flavored."
+repository = "https://github.com/taras-tereschenko/vesper-blur"
+authors = ["Taras Tereschenko"]
+themes = ["themes/vesper-blur.json"]
+icon_themes = []
+languages = []
+capabilities = []
+
+[lib]
+
+[grammars]
+
+[language_servers]
+
+[context_servers]
+
+[agent_servers]
+
+[slash_commands]

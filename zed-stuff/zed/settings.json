@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "colorize_brackets": true,
   "title_bar": {
     "show_sign_in": false
   },
@@ -38,4 +39,14 @@
     "light": "Ayu Light",
     "dark": "Vesper Blur",
   },
+  "theme_overrides": {
+    "Vesper Blur": {
+      "players": [
+        {
+          "cursor": "#a277ffff",
+          "background": "#a277ffff"
+        }
+      ]
+    }
+  }
 }

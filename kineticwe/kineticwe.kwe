@@ -97,7 +97,7 @@ tiles={"layoutDirection":"floating","tiles":[]}
 
 [Tiling][cd409e22-41a2-410c-bca3-9d5168c6d3b8][ce490dda-b97c-4f1b-b1e9-85b38b081e52]
 padding=4
-tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":1,"x":0,"y":0}]}
+tiles={"layoutDirection":"floating","tiles":[{"height":1,"width":0.5,"x":0,"y":0},{"height":1,"width":0.5,"x":0.5,"y":0}]}
 
 [Tiling][cd409e22-41a2-410c-bca3-9d5168c6d3b8][de5340a0-01ee-49c6-899b-0823d13927a0]
 padding=4
