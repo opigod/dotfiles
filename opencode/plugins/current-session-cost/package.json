@@ -1,0 +1,15 @@
+{
+  "name": "opencode-current-session-cost",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenCode TUI sidebar Context section with session cost sourced from the /cost ledger.",
+  "exports": {
+    "./tui": "./tui.tsx"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.6.6",
+    "@opentui/solid": ">=0.6.6",
+    "solid-js": ">=1.9.0"
+  }
+}

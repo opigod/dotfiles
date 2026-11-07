@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "plugins": [
+    "opencode-git-plugin",
+    "opencode-plugin-usage",
+    "@streetturtle/opencode-context-progress",
+    "@streetturtle/opencode-session-tokens",
+    "@streetturtle/opencode-recap",
+    {
+      "package": "/home/opi/opencode-plugins/current-session-cost",
+      "options": {
+        "intervalMs": 1500
+      }
+    },
+    "-opencode.sidebar.context"
+  ]
+}
