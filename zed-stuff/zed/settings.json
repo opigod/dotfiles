@@ -22,7 +22,7 @@
       "type": "registry",
       "default_mode": "build",
       "default_config_options": {
-        "effort": "max",
+        "effort": "none",
         "model": "deepseek/deepseek-flash"
       }
     }
