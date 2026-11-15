@@ -20,11 +20,11 @@ cd ~/dotfiles
 - keeps existing files by default, and with `--force` moves them to
   `<path>.bak.<timestamp>` before replacing them;
 - installs the cursor theme with `sudo` (it writes to `/usr/share/icons`);
-- installs Firefox Nightly into `/opt` with `--with-firefox` (see below);
+- offers Firefox Nightly as an optional extra during an interactive run;
 - never touches `~/.config/opencode/service.json` or the live Noctalia state.
 
 Useful flags: `--dry-run`, `--yes`, `--force`, `--skip-cursor`,
-`--skip-opencode`, `--with-firefox`. See `./install.sh --help`.
+`--skip-opencode`. See `./install.sh --help`.
 
 ## What goes where
 
@@ -47,10 +47,12 @@ config. OpenCode reads its config when it next starts.
 
 ## Firefox Nightly (optional)
 
-`./install.sh --with-firefox` installs Mozilla's official Nightly tarball into
-`/opt/firefox-nightly`, writes `/usr/share/applications/firefox-nightly.desktop`,
-and links `/usr/local/bin/firefox-nightly`. Without the flag, Firefox is not
-touched.
+During an interactive run, `./install.sh` asks whether to install Mozilla's
+official Nightly tarball into `/opt/firefox-nightly`, writes
+`/usr/share/applications/firefox-nightly.desktop`, and links
+`/usr/local/bin/firefox-nightly`. Answer `n` and Firefox is not touched. With
+`--yes` no question is asked: a missing install stays missing, while an
+existing one is still kept repaired.
 
 The install tree is chowned to the user because Nightly updates itself by
 writing next to the binary; a root-owned tree silently stays on the build it was

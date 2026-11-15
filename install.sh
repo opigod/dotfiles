@@ -17,7 +17,6 @@ ASSUME_YES=0
 FORCE=0
 INSTALL_CURSOR=1
 INSTALL_OPENCODE=1
-INSTALL_FIREFOX=0
 
 usage() {
   cat <<'EOF'
@@ -33,9 +32,11 @@ Options:
   -f, --force          Replace existing files/dirs (they are backed up first)
       --skip-cursor    Do not install the Bibata cursor theme (/usr/share/icons)
       --skip-opencode  Do not link the OpenCode configuration
-      --with-firefox   Also install Firefox Nightly into /opt (user-owned, so
-                       its built-in updater works; ~100 MB, needs sudo)
   -h, --help           Show this help
+
+Firefox Nightly is offered as an optional extra during an interactive run;
+--yes skips that offer. It is installed under /opt and owned by you, so its
+built-in updater works. An existing Nightly tree is kept and repaired.
 
 Existing targets are left alone by default. "skip ... use --force" in the
 output means that path already exists and differs from this repository.
@@ -210,11 +211,30 @@ install_firefox() {
     priv=(sudo)
   fi
 
+  # A download is needed for a missing tree or a forced refresh; check the tool
+  # before offering the install, not after the user says yes.
+  if [[ ! -x "$dir/firefox" ]] || ((FORCE)); then
+    if ! command -v curl >/dev/null 2>&1; then
+      say "  skip    $dir (curl is missing)"
+      return 0
+    fi
+  fi
+
+  # Optional: asked here, in the script's own run, not through an argument.
+  # An existing tree is maintained without asking (ownership, launcher, link).
+  if [[ ! -x "$dir/firefox" ]]; then
+    if ((ASSUME_YES)); then
+      say "  skip    $dir (optional; run without --yes to install it)"
+      return 0
+    fi
+    if ! confirm "  Install it now into /opt (~100 MB, needs sudo)?"; then
+      say "  skip    $dir (declined)"
+      return 0
+    fi
+  fi
+
   if [[ -x "$dir/firefox" ]] && ((!FORCE)); then
     say "  ok      $dir (already installed; Nightly updates itself)"
-  elif ! command -v curl >/dev/null 2>&1; then
-    say "  skip    $dir (curl is missing)"
-    return 0
   elif ((DRY_RUN)); then
     say "  fetch   $url"
     say "        [dry-run] unpack into $stage, then swap it with $dir"
@@ -290,7 +310,6 @@ main() {
       -f | --force) FORCE=1 ;;
       --skip-cursor) INSTALL_CURSOR=0 ;;
       --skip-opencode) INSTALL_OPENCODE=0 ;;
-      --with-firefox) INSTALL_FIREFOX=1 ;;
       -h | --help)
         usage
         exit 0
@@ -308,9 +327,6 @@ main() {
     say "Dry run: no changes will be made."
   elif ((!ASSUME_YES)); then
     say "This links dotfiles into $CONFIG and $DATA and copies the cursor theme."
-    if ((INSTALL_FIREFOX)); then
-      say "It also installs Firefox Nightly into /opt (user-owned, self-updating)."
-    fi
     say "Existing files are kept unless --force is given."
     confirm "Continue?" || {
       say "Aborted."
@@ -331,9 +347,7 @@ main() {
     install_cursor
   fi
 
-  if ((INSTALL_FIREFOX)); then
-    install_firefox
-  fi
+  install_firefox
 
   say ""
   if ((DRY_RUN)); then

@@ -194,8 +194,8 @@ repo's `noctalia-full-config.toml` export.
 
 Run `./install.sh` from the repo root. It performs the steps below, keeps
 existing targets unless `--force` is given, and backs up anything it replaces as
-`<path>.bak.<timestamp>`. Add `--with-firefox` to also install Firefox Nightly
-(§4.1). Manual equivalent:
+`<path>.bak.<timestamp>`. Interactive runs offer Firefox Nightly (§4.1);
+`--yes` skips that offer. Manual equivalent:
 
 ```sh
 mkdir -p ~/.config ~/.local/share/zed/extensions/installed \
@@ -249,13 +249,13 @@ Notes:
 - **`install.sh`** — idempotent installer. Links the config directories, copies
   the Noctalia/LSFG files and cursor theme, backs up replaced targets, skips
   the Noctalia base config when live state exists (unless `--force`), and never
-  touches `service.json` or the state file. `--with-firefox` additionally
-  installs Mozilla's Nightly tarball into `/opt/firefox-nightly`, chowns that
-  tree to the user so the built-in updater can write to it, writes
-  `/usr/share/applications/firefox-nightly.desktop`, and points
-  `/usr/local/bin/firefox-nightly` at it; a dangling link is repaired, an
-  installed tree is a no-op unless `--force`. Flags: `--dry-run`, `--yes`,
-  `--force`, `--skip-cursor`, `--skip-opencode`, `--with-firefox`.
+  touches `service.json` or the state file. It also offers Firefox Nightly
+  during an interactive run: Mozilla's tarball goes into `/opt/firefox-nightly`,
+  the tree is chowned to the user so the built-in updater can write, the
+  `/usr/share/applications/firefox-nightly.desktop` launcher is written, and
+  `/usr/local/bin/firefox-nightly` points at it; an existing tree is maintained
+  without asking, and a dangling link is repaired. `--yes` skips the offer.
+  Flags: `--dry-run`, `--yes`, `--force`, `--skip-cursor`, `--skip-opencode`.
 - **`.gitignore`** — ignores `AGENTS.md`, `opencode/AGENTS.md`, and
   `kineticwe/kdeglobals` (a machine-specific absolute symlink to the live
   `~/.config/kdeglobals`).
