@@ -3,8 +3,12 @@ high_contrast = false
 ui_scale = 1.0
 
 [audio]
+enable_notification_sounds = true
 enable_overdrive = true
+enable_power_sounds = true
+enable_screenshot_sounds = true
 enable_sounds = true
+enable_volume_sounds = true
 sound_theme = "freedesktop"
 sound_volume = 0.5
 
@@ -18,11 +22,13 @@ order = [ "default" ]
 
     [bar.default]
     auto_hide = false
+    auto_hide_delay_ms = 0
     background_opacity = 0.89999997615814209
-    border = "outline"
+    border = "outline_variant"
     border_width = 0.0
     capsule = false
-    capsule_fill = "surface_variant"
+    capsule_border_width = 1.0
+    capsule_fill = "surface_container"
     capsule_group = []
     capsule_opacity = 1.0
     capsule_padding = 6.0
@@ -32,29 +38,32 @@ order = [ "default" ]
         "cpu",
         "ram",
         "divider_2",
-        "mouse",
-        "battery",
+        "peak",
+        "bar",
         "divider_2",
         "workspaces",
         "divider",
         "clipboard",
         "wallpaper",
+        "wallhaven",
         "volume",
         "notifications",
         "tray",
         "divider",
         "indicator"
     ]
+    compositor_blur = true
     concave_edge_corners = true
     contact_shadow = false
     enabled = true
-    end = [ "privacy", "clock" ]
+    end = [ "keyboard_layout", "privacy", "clock" ]
+    font_family = "JetBrainsMono Nerd Font"
     font_scale = 1.0
     font_weight = 500
     hover_highlight = true
     layer = "top"
     margin_edge = 0
-    margin_ends = 600
+    margin_ends = 550
     margin_opposite_edge = 0
     padding = 14
     panel_overlap = 1
@@ -68,18 +77,24 @@ order = [ "default" ]
     scale = 1.0
     shadow = true
     show_on_workspace_switch = true
+    show_tooltip = true
     smart_auto_hide = false
     start = [ "active_window" ]
     thickness = 34
     widget_spacing = 6
 
         [bar.default.dead_zone]
+        click_through = false
 
 [battery]
 warning_threshold = 10
 
     [battery.device."/org/freedesktop/UPower/devices/battery_hidpp_battery_0"]
     warning_threshold = 20
+
+[bluetooth]
+connect_when_enabled = false
+connection_notifications = false
 
 [brightness]
 enable_ddcutil = false
@@ -88,6 +103,8 @@ minimum_brightness = 0.0
 sync_all_monitors = false
 
 [calendar]
+dedupe_events = false
+dedupe_ignore_patterns = []
 enabled = false
 event_date_format = "%A %e %B"
 event_time_format = "%H:%M"
@@ -100,7 +117,9 @@ refresh_minutes = 15
     use_event_reminders = true
 
 [control_center]
-hidden_tabs = []
+circular_avatar = true
+hidden_tabs = [ "monitor", "screen-time" ]
+show_avatar_border = true
 show_session_button = true
 show_shortcut_labels = true
 sidebar = "full"
@@ -108,8 +127,14 @@ sidebar_section = "full"
 width = 700
 
     [control_center.calendar]
+    hide_past_events = false
+    past_events_threshold_minutes = 30
     show_events_card = true
+    show_events_location = false
     show_week_numbers = false
+
+    [control_center.media]
+    show_visualizer = true
 
     [[control_center.shortcuts]]
     type = "wifi"
@@ -121,13 +146,13 @@ width = 700
     type = "caffeine"
 
     [[control_center.shortcuts]]
-    type = "nightlight"
+    type = "power_profile"
 
     [[control_center.shortcuts]]
     type = "notification"
 
     [[control_center.shortcuts]]
-    type = "power_profile"
+    type = "keyboard_layout"
 
 [desktop_widgets]
 enabled = true
@@ -144,8 +169,9 @@ active_opacity = 1.0
 active_scale = 1.0
 auto_hide = true
 background_opacity = 0.87999999523162842
-border = "outline"
+border = "outline_variant"
 border_width = 0.0
+compositor_blur = false
 concave_edge_corners = true
 cross_axis_padding = 8
 enabled = true
@@ -163,7 +189,6 @@ magnification_scale = 1.4500000476837158
 main_axis_padding = 16
 margin_edge = 0
 margin_ends = 0
-monitors = []
 pinned = []
 position = "bottom"
 radius = 16
@@ -273,10 +298,11 @@ blurred_desktop = false
 edge_smoothness = 0.30000001192092896
 enabled = true
 fingerprint = true
+grace_period_seconds = 0
 lock_before_suspend = true
 monitors = []
 tint_intensity = 0.30000001192092896
-transition = [ "fade", "wipe", "disc", "stripes", "zoom", "honeycomb" ]
+transition = [ "fade", "wipe", "disc", "stripes", "zoom", "honeycomb", "vortex", "pixel", "diamond", "golden", "melt" ]
 transition_duration = 1500.0
 wallpaper = ""
 
@@ -303,7 +329,7 @@ widget_order = [ "lockscreen-login-box@Virtual-virtual-xdp-kde-vesktop", "locksc
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -331,7 +357,7 @@ widget_order = [ "lockscreen-login-box@Virtual-virtual-xdp-kde-vesktop", "locksc
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@Virtual-virtual-xdp-kde-vesktop".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -355,8 +381,11 @@ temperature_night = 4000
 [notification]
 background_opacity = 0.97000002861022949
 border = true
+border_color = "outline_variant"
+border_width = 1.0
 collapse_on_dismiss = true
 enable_daemon = true
+follow_focused_output = false
 history_retention_hours = 0
 keep_dismissed_in_history = true
 layer = "top"
@@ -368,11 +397,16 @@ position = "top_right"
 scale = 1.0
 show_actions = true
 show_app_name = true
+width = 360
 
 [osd]
 background_opacity = 0.97000002861022949
 border = true
+border_color = "outline_variant"
+border_width = 1.0
 enabled = true
+follow_focused_output = false
+hide_delay_ms = 1400
 monitors = []
 offset_x = 20
 offset_y = 8
@@ -385,11 +419,13 @@ scale = 1.0
     bluetooth = true
     brightness = true
     caffeine = true
+    custom = true
     dnd = true
     keyboard_backlight = true
     keyboard_layout = true
     lock_keys = true
     media = true
+    media_volume = true
     nightlight = true
     power_profile = true
     privacy = true
@@ -398,11 +434,18 @@ scale = 1.0
     volume_output = true
     wifi = true
 
-[plugin_settings]
+[plugin_settings."coder/deepseek_usage"]
+panel_open_near_click = true
 
 [plugins]
 auto_update = "all"
-enabled = [ "icefish/phone-connect", "icefish/phone-operate", "mahmoudomiesh/network-monitor" ]
+enabled = [
+    "icefish/phone-connect",
+    "mahmoudomiesh/network-monitor",
+    "noctalia/wallhaven",
+    "alpzy/deepseek-peak",
+    "coder/deepseek_usage"
+]
 
     [[plugins.source]]
     enabled = true
@@ -431,25 +474,30 @@ corner_radius_scale = 2.0
 date_format = "%A, %x"
 disable_mipmaps = false
 external_ip_enabled = false
-font_family = "sans-serif"
+font_family = "JetBrainsMono Nerd Font"
 input_borders = true
-launch_apps_as_systemd_services = false
+launch_apps_as_systemd_services = true
 launch_apps_custom_command = ""
+niri_overview_close_on_launch_enabled = false
 niri_overview_type_to_launch_enabled = false
 offline_mode = false
 password_style = "default"
-polkit_agent = false
+polkit_agent = true
 popup_borders = true
 popup_shadows = true
-screen_time_enabled = true
+readline_shortcuts = false
+screen_time_enabled = false
 settings_expand_all_groups = false
 settings_show_advanced = true
 settings_window_translucent = false
 setup_wizard_enabled = true
 shared_gl_context = true
+show_close_buttons = true
 show_location = true
 telemetry_enabled = false
 time_format = "{:%H:%M}"
+umbriel_audio_provider_enabled = false
+umbriel_overview_close_on_launch_enabled = false
 umbriel_overview_type_to_launch_enabled = false
 
     [shell.animation]
@@ -465,14 +513,24 @@ umbriel_overview_type_to_launch_enabled = false
     app_grid = false
     auto_paste = "auto"
     categories = true
+    category_icons_only = false
     compact = false
+    default_view = "recent"
     fetch_exchange_rates = true
+    ignore_mouse = false
+    layout = "full"
     pinned = []
     provider_prefix = "/"
+    search_position = "bottom"
     show_app_actions = false
     show_app_origin_indicator = true
     show_icons = true
+    show_navigation_labels = true
+    show_session_button = true
+    show_settings_button = true
     sort_by_usage = true
+    track_usage = true
+    width = 760
 
         [shell.launcher.dmenu]
 
@@ -483,6 +541,8 @@ umbriel_overview_type_to_launch_enabled = false
     blacklist = []
 
     [shell.panel]
+    border_color = "outline_variant"
+    border_width = 1.0
     borders = true
     clipboard_placement = "attached"
     clipboard_position = "center"
@@ -506,6 +566,7 @@ umbriel_overview_type_to_launch_enabled = false
     transparency_mode = "glass"
     wallpaper_placement = "attached"
     wallpaper_position = "auto"
+    wallpaper_show_names = true
 
     [shell.privacy]
     cam_filter_regex = ""
@@ -521,15 +582,23 @@ umbriel_overview_type_to_launch_enabled = false
     close_on_copy = true
     close_on_save = true
     confirm_region = false
+    copy_on_close = false
     copy_to_clipboard = true
     directory = ""
     filename_pattern = ""
+    format = "png"
     freeze_screen = true
     pipe_command = ""
     pipe_to_command = false
+    quality = 90
+    region_border_width = 2.0
+    region_dim_opacity = 0.64999997615814209
+    region_modifier = "none"
     remember_last_region = false
     save_to_file = true
     show_cursor = false
+    show_region_dimensions = true
+    show_region_hint = true
     skip_annotate_on_copy_save = false
 
     [shell.session]
@@ -546,6 +615,7 @@ umbriel_overview_type_to_launch_enabled = false
         enabled = true
         glyph = ""
         label = ""
+        lockscreen_shortcut = ""
         shortcut = "1"
         variant = "default"
 
@@ -556,6 +626,7 @@ umbriel_overview_type_to_launch_enabled = false
         enabled = true
         glyph = ""
         label = ""
+        lockscreen_shortcut = ""
         shortcut = "2"
         variant = "default"
 
@@ -566,6 +637,7 @@ umbriel_overview_type_to_launch_enabled = false
         enabled = true
         glyph = ""
         label = ""
+        lockscreen_shortcut = ""
         shortcut = "3"
         variant = "default"
 
@@ -576,6 +648,7 @@ umbriel_overview_type_to_launch_enabled = false
         enabled = true
         glyph = ""
         label = ""
+        lockscreen_shortcut = ""
         shortcut = "4"
         variant = "default"
 
@@ -586,6 +659,7 @@ umbriel_overview_type_to_launch_enabled = false
         enabled = true
         glyph = ""
         label = ""
+        lockscreen_shortcut = ""
         shortcut = "5"
         variant = "destructive"
 
@@ -650,8 +724,9 @@ custom_palette = ""
 mode = "dark"
 pure_black_dark = false
 shell_mode = "follow"
-source = "community"
-wallpaper_scheme = "m3-content"
+source = "wallpaper"
+sync_color_scheme = true
+wallpaper_scheme = "m3-rainbow"
 
     [theme.templates]
     builtin_ids = [ "cava", "gtk3", "gtk4", "kcolorscheme", "kineticwe", "qt" ]
@@ -668,7 +743,7 @@ enabled = true
 fill_color = ""
 fill_mode = "crop"
 per_monitor_directories = false
-transition = [ "fade", "wipe", "disc", "stripes", "zoom", "honeycomb" ]
+transition = [ "fade", "wipe", "disc", "stripes", "zoom", "honeycomb", "vortex", "pixel", "diamond", "golden", "melt" ]
 transition_duration = 1500.0
 transition_on_startup = false
 
@@ -676,6 +751,7 @@ transition_on_startup = false
     enabled = false
     interval_seconds = 1800
     order = "random"
+    pause_on_fullscreen = false
     recursive = false
 
 [weather]
@@ -685,14 +761,17 @@ refresh_minutes = 30
 unit = "metric"
 
 [widget.active_window]
-icon_size = 14.0
+icon_size = 16.0
 max_length = 260.0
 min_length = 80.0
 title_scroll = "none"
 type = "active_window"
 
+[widget.bar]
+type = "coder/deepseek_usage:bar"
+
 [widget.battery]
-device = "/org/freedesktop/UPower/devices/mouse_hidpp_battery_0"
+device = "/org/freedesktop/UPower/devices/battery_hidpp_battery_0"
 type = "battery"
 
 [widget.cpu]
@@ -741,11 +820,6 @@ min_length = 80.0
 title_scroll = "none"
 type = "media"
 
-[widget.mouse]
-scale = 0.75
-text = "MOUSE"
-type = "text"
-
 [widget.network_rx]
 stat = "net_rx"
 type = "sysmon"
@@ -757,6 +831,9 @@ type = "sysmon"
 [widget.output_volume]
 device = "output"
 type = "volume"
+
+[widget.peak]
+type = "alpzy/deepseek-peak:peak"
 
 [widget.ram]
 stat = "ram_used"
@@ -778,9 +855,12 @@ type = "tray"
 show_label = false
 type = "volume"
 
+[widget.wallhaven]
+type = "noctalia/wallhaven:wallhaven"
+
 [widget.workspaces]
 anchor = true
-empty_color = "outline"
+empty_color = "outline_variant"
 labels_only_when_occupied = true
 occupied_color = "primary"
 type = "workspaces"
