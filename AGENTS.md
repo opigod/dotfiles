@@ -194,7 +194,8 @@ repo's `noctalia-full-config.toml` export.
 
 Run `./install.sh` from the repo root. It performs the steps below, keeps
 existing targets unless `--force` is given, and backs up anything it replaces as
-`<path>.bak.<timestamp>`. Manual equivalent:
+`<path>.bak.<timestamp>`. Add `--with-firefox` to also install Firefox Nightly
+(§4.1). Manual equivalent:
 
 ```sh
 mkdir -p ~/.config ~/.local/share/zed/extensions/installed \
@@ -248,8 +249,13 @@ Notes:
 - **`install.sh`** — idempotent installer. Links the config directories, copies
   the Noctalia/LSFG files and cursor theme, backs up replaced targets, skips
   the Noctalia base config when live state exists (unless `--force`), and never
-  touches `service.json` or the state file. Flags: `--dry-run`, `--yes`,
-  `--force`, `--skip-cursor`, `--skip-opencode`.
+  touches `service.json` or the state file. `--with-firefox` additionally
+  installs Mozilla's Nightly tarball into `/opt/firefox-nightly`, chowns that
+  tree to the user so the built-in updater can write to it, writes
+  `/usr/share/applications/firefox-nightly.desktop`, and points
+  `/usr/local/bin/firefox-nightly` at it; a dangling link is repaired, an
+  installed tree is a no-op unless `--force`. Flags: `--dry-run`, `--yes`,
+  `--force`, `--skip-cursor`, `--skip-opencode`, `--with-firefox`.
 - **`.gitignore`** — ignores `AGENTS.md`, `opencode/AGENTS.md`, and
   `kineticwe/kdeglobals` (a machine-specific absolute symlink to the live
   `~/.config/kdeglobals`).
@@ -950,6 +956,10 @@ These are useful when the task crosses into the compositor/shell itself:
 | `~/.local/state/opencode/opencode-cost/cost.sqlite` | `/cost` plugin ledger read by the local sidebar widget |
 | `~/.cache/opencode/npm/` | Fetched npm plugin cache; not tracked |
 | `/usr/share/icons/Bibata-Modern-Ice` | Deployed cursor theme |
+| `/opt/firefox-nightly` | Official Firefox Nightly tarball tree; owned by `opi` so its updater can write (installed by `install.sh --with-firefox`) |
+| `/usr/share/applications/firefox-nightly.desktop` | Nightly launcher written by `install.sh --with-firefox` |
+| `/usr/local/bin/firefox-nightly` | Symlink to `/opt/firefox-nightly/firefox` |
+| `~/.config/mozilla/firefox/` | Nightly profile (Nightly follows XDG config, not `~/.mozilla`) |
 | `~/.local/share/zed/extensions/installed/vesper-blur` | Deployed Zed theme extension |
 
 Installed KineticWE packages (as of verification):

@@ -17,13 +17,15 @@ ASSUME_YES=0
 FORCE=0
 INSTALL_CURSOR=1
 INSTALL_OPENCODE=1
+INSTALL_FIREFOX=0
 
 usage() {
   cat <<'EOF'
 Usage: ./install.sh [OPTIONS]
 
 Links and copies this repository's configs into the current user's home.
-Run it as your normal user; sudo is only used for the system cursor theme.
+Run it as your normal user; sudo is used only for system-wide steps (the
+cursor theme and the optional Firefox Nightly install).
 
 Options:
   -n, --dry-run        Show what would be done, change nothing
@@ -31,6 +33,8 @@ Options:
   -f, --force          Replace existing files/dirs (they are backed up first)
       --skip-cursor    Do not install the Bibata cursor theme (/usr/share/icons)
       --skip-opencode  Do not link the OpenCode configuration
+      --with-firefox   Also install Firefox Nightly into /opt (user-owned, so
+                       its built-in updater works; ~100 MB, needs sudo)
   -h, --help           Show this help
 
 Existing targets are left alone by default. "skip ... use --force" in the
@@ -182,6 +186,102 @@ install_opencode() {
   fi
 }
 
+# Mozilla ships Nightly as a tarball, not as a package. Unpack it into /opt and
+# give the tree to the user: Nightly's built-in updater writes next to the
+# binary, and a root-owned tree silently stays on the build it was installed
+# from. The profile lives in ~/.config/mozilla, so replacing the tree is safe.
+install_firefox() {
+  local dir="/opt/firefox-nightly"
+  local stage="/opt/firefox-nightly.new"
+  local old="/opt/firefox-nightly.old"
+  local desktop="/usr/share/applications/firefox-nightly.desktop"
+  local bin="/usr/local/bin/firefox-nightly"
+  local url="https://download.mozilla.org/?product=firefox-nightly-latest-ssl&os=linux64&lang=en-US"
+  local tmp version
+  local -a priv=()
+
+  say "Firefox Nightly"
+
+  if ((EUID != 0)); then
+    if ! command -v sudo >/dev/null 2>&1; then
+      say "  skip    $dir (needs root and sudo is missing)"
+      return 0
+    fi
+    priv=(sudo)
+  fi
+
+  if [[ -x "$dir/firefox" ]] && ((!FORCE)); then
+    say "  ok      $dir (already installed; Nightly updates itself)"
+  elif ! command -v curl >/dev/null 2>&1; then
+    say "  skip    $dir (curl is missing)"
+    return 0
+  elif ((DRY_RUN)); then
+    say "  fetch   $url"
+    say "        [dry-run] unpack into $stage, then swap it with $dir"
+  else
+    say "  fetch   $url"
+    "${priv[@]}" rm -rf -- "$stage" "$old"
+    "${priv[@]}" mkdir -p -- "$stage"
+    if ! curl --fail --location --progress-bar "$url" |
+      "${priv[@]}" tar -xJf - -C "$stage" --strip-components=1; then
+      say "  skip    $dir (download or unpack failed)"
+      "${priv[@]}" rm -rf -- "$stage"
+      return 0
+    fi
+    if [[ -e "$dir" ]]; then
+      "${priv[@]}" mv -- "$dir" "$old"
+    fi
+    "${priv[@]}" mv -- "$stage" "$dir"
+    "${priv[@]}" rm -rf -- "$old"
+  fi
+
+  # Hand-installed trees are often root-owned; take ownership so updates apply.
+  if [[ -d "$dir" ]] && [[ "$(stat -c %u -- "$dir")" != "$(id -u)" ]]; then
+    say "  chown   $dir -> $(id -un):$(id -gn)"
+    run "${priv[@]}" chown -R -- "$(id -u):$(id -g)" "$dir"
+  fi
+
+  if [[ -x "$dir/firefox" ]] && ((!DRY_RUN)); then
+    version="$("$dir/firefox" --version 2>/dev/null || true)"
+    if [[ -n "$version" ]]; then
+      say "        $version"
+    fi
+  fi
+
+  # Launcher; rewritten only when it does not point at this install.
+  if [[ -f "$desktop" ]] && grep -qxF -- "Exec=$dir/firefox %u" "$desktop"; then
+    say "  ok      $desktop"
+  elif ((DRY_RUN)); then
+    say "        [dry-run] write $desktop"
+  else
+    say "  write   $desktop"
+    tmp="$(mktemp)"
+    cat >"$tmp" <<EOF
+[Desktop Entry]
+Name=Firefox Nightly
+Exec=$dir/firefox %u
+Icon=$dir/browser/chrome/icons/default/default128.png
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+EOF
+    "${priv[@]}" install -Dm644 -- "$tmp" "$desktop"
+    rm -f -- "$tmp"
+  fi
+
+  # A dangling link (old /opt/firefox path) is repaired; a real file is kept.
+  if [[ -L "$bin" ]] &&
+    [[ "$(readlink -f -- "$bin" 2>/dev/null || true)" == "$(readlink -f -- "$dir/firefox")" ]]; then
+    say "  ok      $bin"
+  elif [[ -e "$bin" ]] && ((!FORCE)); then
+    say "  skip    $bin (exists; use --force to replace)"
+  else
+    say "  link    $bin -> $dir/firefox"
+    run "${priv[@]}" ln -sfn -- "$dir/firefox" "$bin"
+  fi
+}
+
 main() {
   while (($#)); do
     case "$1" in
@@ -190,6 +290,7 @@ main() {
       -f | --force) FORCE=1 ;;
       --skip-cursor) INSTALL_CURSOR=0 ;;
       --skip-opencode) INSTALL_OPENCODE=0 ;;
+      --with-firefox) INSTALL_FIREFOX=1 ;;
       -h | --help)
         usage
         exit 0
@@ -207,6 +308,9 @@ main() {
     say "Dry run: no changes will be made."
   elif ((!ASSUME_YES)); then
     say "This links dotfiles into $CONFIG and $DATA and copies the cursor theme."
+    if ((INSTALL_FIREFOX)); then
+      say "It also installs Firefox Nightly into /opt (user-owned, self-updating)."
+    fi
     say "Existing files are kept unless --force is given."
     confirm "Continue?" || {
       say "Aborted."
@@ -225,6 +329,10 @@ main() {
 
   if ((INSTALL_CURSOR)); then
     install_cursor
+  fi
+
+  if ((INSTALL_FIREFOX)); then
+    install_firefox
   fi
 
   say ""

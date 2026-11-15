@@ -20,10 +20,11 @@ cd ~/dotfiles
 - keeps existing files by default, and with `--force` moves them to
   `<path>.bak.<timestamp>` before replacing them;
 - installs the cursor theme with `sudo` (it writes to `/usr/share/icons`);
+- installs Firefox Nightly into `/opt` with `--with-firefox` (see below);
 - never touches `~/.config/opencode/service.json` or the live Noctalia state.
 
 Useful flags: `--dry-run`, `--yes`, `--force`, `--skip-cursor`,
-`--skip-opencode`. See `./install.sh --help`.
+`--skip-opencode`, `--with-firefox`. See `./install.sh --help`.
 
 ## What goes where
 
@@ -43,6 +44,30 @@ Useful flags: `--dry-run`, `--yes`, `--force`, `--skip-cursor`,
 
 Log out and back in after installing so KineticWE, Noctalia, and Zed reload the
 config. OpenCode reads its config when it next starts.
+
+## Firefox Nightly (optional)
+
+`./install.sh --with-firefox` installs Mozilla's official Nightly tarball into
+`/opt/firefox-nightly`, writes `/usr/share/applications/firefox-nightly.desktop`,
+and links `/usr/local/bin/firefox-nightly`. Without the flag, Firefox is not
+touched.
+
+The install tree is chowned to the user because Nightly updates itself by
+writing next to the binary; a root-owned tree silently stays on the build it was
+installed from. The profile lives in `~/.config/mozilla/firefox`, so refreshing
+the install with `--force` keeps bookmarks, logins, and extensions — quit
+Nightly first. `Meta+W` already launches this path
+(`kineticwe/custom-keybinds.kwe`).
+
+Manual equivalent:
+
+```sh
+sudo mkdir -p /opt/firefox-nightly
+curl -fL "https://download.mozilla.org/?product=firefox-nightly-latest-ssl&os=linux64&lang=en-US" |
+  sudo tar -xJf - -C /opt/firefox-nightly --strip-components=1
+sudo chown -R "$USER:" /opt/firefox-nightly
+sudo ln -sfn /opt/firefox-nightly/firefox /usr/local/bin/firefox-nightly
+```
 
 ## Manual deploy
 
