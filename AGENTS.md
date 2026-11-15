@@ -82,8 +82,9 @@ Do not revert, stash, or reformat these unless the user explicitly asks.
 ```
 /home/opi/dotfiles/
 ├── AGENTS.md                       # this file
-├── README.md                       # deploy steps + OpenCode links + known issue
-├── .gitignore                      # ignores kineticwe/kdeglobals only
+├── README.md                       # install/deploy docs, layers, known issue
+├── install.sh                      # idempotent installer (links + copies)
+├── .gitignore                      # ignores the AGENTS.md files + kineticwe/kdeglobals
 ├── noctalia-full-config.toml       # 786 lines, full Noctalia settings export
 ├── Bibata-Modern-Ice/              # XCursor theme "Bibata-Modern-Ice"
 │   ├── index.theme                 # XCursor theme metadata
@@ -189,40 +190,43 @@ The live Noctalia settings actually in effect are
 `~/.local/state/noctalia-kwe/settings.toml` (override layer), **not** the
 repo's `noctalia-full-config.toml` export.
 
-### 3.2 Fresh-machine deployment (from README, corrected)
+### 3.2 Fresh-machine deployment
 
-Run from the repo root:
+Run `./install.sh` from the repo root. It performs the steps below, keeps
+existing targets unless `--force` is given, and backs up anything it replaces as
+`<path>.bak.<timestamp>`. Manual equivalent:
 
 ```sh
-ln -s ghostty ~/.config/
-ln -s kineticwe ~/.config/
-ln -s nvim ~/.config/
-ln -s zed-stuff/zed ~/.config
-ln -s zed-stuff/vesper-blur ~/.local/share/zed/extensions/installed/
-mkdir -p ~/.config/opencode ~/opencode-plugins
+mkdir -p ~/.config ~/.local/share/zed/extensions/installed \
+  ~/.config/noctalia-kwe ~/.config/lsfg-vk ~/.config/opencode ~/opencode-plugins
+ln -sfn "$PWD/ghostty" ~/.config/ghostty
+ln -sfn "$PWD/kineticwe" ~/.config/kineticwe
+ln -sfn "$PWD/nvim" ~/.config/nvim
+ln -sfn "$PWD/zed-stuff/zed" ~/.config/zed
+ln -sfn "$PWD/zed-stuff/vesper-blur" ~/.local/share/zed/extensions/installed/vesper-blur
 ln -sfn "$PWD/opencode/cli.json" ~/.config/opencode/cli.json
 ln -sfn "$PWD/opencode/opencode.json" ~/.config/opencode/opencode.json
 ln -sfn "$PWD/opencode/plugins/current-session-cost" ~/opencode-plugins/current-session-cost
-cp -r Bibata-Modern-Ice /usr/share/icons/     # README omits -r
 cp noctalia-full-config.toml ~/.config/noctalia-kwe/
+cp kineticwe/lsfg-vk/conf.toml ~/.config/lsfg-vk/conf.toml
+sudo cp -r Bibata-Modern-Ice /usr/share/icons/   # -r is required
 ```
 
 Notes:
 
-- Ensure `~/.config/noctalia-kwe/` and
-  `~/.local/share/zed/extensions/installed/` exist before the copy/`ln`;
-  otherwise `ln` may create a link named `installed` instead of linking
-  inside the directory.
+- Ensure the parent directories exist before the copy/`ln`; otherwise `ln` may
+  create a link named `installed` instead of linking inside the directory.
 - `cp -r Bibata-Modern-Ice /usr/share/icons/` writes to a system directory and
   normally needs root (`sudo`).
 - On re-deploy, replace an existing symlink instead of nesting inside it
-  (`ln -sfn` or remove the old link first).
+  (`ln -sfn` or remove the old link first). `install.sh` does this and backs up
+  real directories rather than deleting them.
 - Noctalia merges **every `*.toml` in `~/.config/noctalia-kwe/` alphabetically**,
   then applies `~/.local/state/noctalia-kwe/settings.toml` as an override. A
   copied full-config export therefore works as a base layer, but GUI changes
-  stored in the state override can mask values from it.
-- For a fresh machine, copy the LSFG config to `~/.config/lsfg-vk/conf.toml`
-  manually (the repo copy under `kineticwe/lsfg-vk/` is not linked).
+  stored in the state override can mask values from it. `install.sh` skips the
+  copy when the state file already exists unless `--force` is given.
+- The LSFG config is copied, not linked, to `~/.config/lsfg-vk/conf.toml`.
 - OpenCode's `service.json` is machine-local and contains a password. It is
   deliberately absent from the repo; do not overwrite it when deploying.
 - The `cli.json` entry for `current-session-cost` uses the live path
@@ -230,6 +234,8 @@ Notes:
   symlink must exist for the plugin to load.
 - OpenCode fetches the npm plugins named in `cli.json`/`opencode.json` itself;
   only `current-session-cost` is vendored here.
+- `opencode/AGENTS.md` is gitignored but linked to `~/.config/opencode/AGENTS.md`
+  when present; a fresh clone will not contain it.
 
 ---
 
@@ -237,11 +243,16 @@ Notes:
 
 ### 4.1 Root files
 
-- **`README.md`** — deployment commands, OpenCode link setup, and the Noctalia
-  resolution caveat. Still omits `-r` and Noctalia's merge/override details;
-  this AGENTS.md is authoritative.
-- **`.gitignore`** — one entry: `kineticwe/kdeglobals`, a machine-specific
-  absolute symlink to the live `~/.config/kdeglobals`.
+- **`README.md`** — install/deploy instructions, the repo→live map, Noctalia's
+  merge/override behavior, and known issues.
+- **`install.sh`** — idempotent installer. Links the config directories, copies
+  the Noctalia/LSFG files and cursor theme, backs up replaced targets, skips
+  the Noctalia base config when live state exists (unless `--force`), and never
+  touches `service.json` or the state file. Flags: `--dry-run`, `--yes`,
+  `--force`, `--skip-cursor`, `--skip-opencode`.
+- **`.gitignore`** — ignores `AGENTS.md`, `opencode/AGENTS.md`, and
+  `kineticwe/kdeglobals` (a machine-specific absolute symlink to the live
+  `~/.config/kdeglobals`).
 - **`noctalia-full-config.toml`** — 786-line full export of Noctalia settings
   (an old snapshot; no `config_version` field). Machine-readable section index
   in §4.5. Contains no API keys.
@@ -869,6 +880,9 @@ Run from `/home/opi/dotfiles`:
 ```sh
 git status --short --ignored      # see tracked + ignored live symlink
 git diff --check                  # whitespace errors
+
+bash -n install.sh                # installer syntax
+./install.sh --dry-run --yes      # what a deploy would change; writes nothing
 
 ghostty +validate-config --config-file=ghostty/config
 ghostty +show-config --changes-only   # proves which values are live
