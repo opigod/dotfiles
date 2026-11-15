@@ -85,6 +85,8 @@ Do not revert, stash, or reformat these unless the user explicitly asks.
 ├── README.md                       # install/deploy docs, layers, known issue
 ├── install.sh                      # idempotent installer (links + copies)
 ├── .gitignore                      # ignores the AGENTS.md files + kineticwe/kdeglobals
+├── .githooks/
+│   └── pre-commit                 # tracked hook: rejects staged credentials
 ├── noctalia-full-config.toml       # 786 lines, full Noctalia settings export
 ├── Bibata-Modern-Ice/              # XCursor theme "Bibata-Modern-Ice"
 │   ├── index.theme                 # XCursor theme metadata
@@ -729,6 +731,21 @@ Chosen by KineticWE (`appearance.kwe`, `kineticwe.kwe [Mouse]`) and KDE
 `~/.config/opencode/service.json` is **not** in the repo. It contains a service
 password and stays machine-local. `cli.json.bak` is also untracked.
 
+### 4.9 `.githooks/pre-commit` — staged-secret guard
+
+Shell + awk hook (no Python) that scans the index (the staged version of each
+file, not the working tree) for non-empty credential assignments such as
+`api_key`, `token`, `secret`, and `password`, plus known token formats (OpenAI
+`sk-…`, GitHub, Slack, AWS, Google, JWT). Empty placeholders (`api_key = ""`)
+and references (`"${TOKEN}"`, `"$TOKEN"`, `"env:TOKEN"`) pass. It prints the
+file, line, and field name but never the value, and exits 1 on a hit. It needs
+only `git` plus the usual command-line tools (`sh`, `awk`, `grep`, `xargs`,
+`sed`, `mktemp`).
+
+`install.sh` sets `core.hooksPath=.githooks`. Enable manually with
+`git config core.hooksPath .githooks`; bypass a false positive once with
+`git commit --no-verify`.
+
 ---
 
 ## 5. Cross-file invariants and linked settings
@@ -804,6 +821,7 @@ password and stays machine-local. `cli.json.bak` is also untracked.
 | OpenCode TUI plugins/settings | `opencode/cli.json` | TUI-only; local plugin + built-in disable directives |
 | OpenCode server plugins | `opencode/opencode.json` | Server/TUI packages; `/cost` ledger comes from here |
 | Current-session cost widget | `opencode/plugins/current-session-cost/tui.tsx` | Read-only `/cost` ledger; no build step |
+| Commit-time secret guard | `.githooks/pre-commit` | Enabled by `install.sh`; scans staged files for non-empty credentials |
 
 ---
 
@@ -886,6 +904,7 @@ Run from `/home/opi/dotfiles`:
 ```sh
 git status --short --ignored      # see tracked + ignored live symlink
 git diff --check                  # whitespace errors
+git hook run pre-commit           # secret guard against the index
 
 bash -n install.sh                # installer syntax
 ./install.sh --dry-run --yes      # what a deploy would change; writes nothing

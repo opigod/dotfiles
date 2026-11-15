@@ -21,6 +21,8 @@ cd ~/dotfiles
   `<path>.bak.<timestamp>` before replacing them;
 - installs the cursor theme with `sudo` (it writes to `/usr/share/icons`);
 - offers Firefox Nightly as an optional extra during an interactive run;
+- activates the tracked pre-commit guard, which rejects staged API keys,
+  tokens, and passwords (empty placeholders are fine);
 - never touches `~/.config/opencode/service.json` or the live Noctalia state.
 
 Useful flags: `--dry-run`, `--yes`, `--force`, `--skip-cursor`,
@@ -109,6 +111,22 @@ ln -sfn "$PWD/opencode/plugins/current-session-cost" \
 OpenCode service password. Keep it machine-local. The npm plugins named in
 `cli.json` and `opencode.json` are fetched by OpenCode itself; only the local
 `current-session-cost` plugin source lives here.
+
+## Git hooks
+
+`install.sh` points `core.hooksPath` at the tracked `.githooks/` directory.
+Its `pre-commit` hook scans staged files for non-empty API keys, tokens,
+secrets, and passwords, and rejects the commit before they enter history.
+Empty placeholders such as `api_key = ""` and variable references such as
+`"${TOKEN}"` are allowed. The hook is shell + awk; no Python is required.
+
+Enable it manually with:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+If it flags a false positive, bypass it once with `git commit --no-verify`.
 
 ## Noctalia config layers
 

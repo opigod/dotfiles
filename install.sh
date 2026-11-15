@@ -129,6 +129,29 @@ install_config_links() {
     "$DATA/zed/extensions/installed/vesper-blur"
 }
 
+install_git_hooks() {
+  local current
+
+  [[ -x "$REPO/.githooks/pre-commit" ]] || return 0
+  if ! git -C "$REPO" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    return 0
+  fi
+
+  say "Git hooks"
+  current="$(git -C "$REPO" config --get core.hooksPath || true)"
+  if [[ "$current" == ".githooks" ]]; then
+    say "  ok      core.hooksPath = .githooks"
+    return 0
+  fi
+  if [[ -n "$current" ]]; then
+    say "  skip    core.hooksPath is already set to $current"
+    return 0
+  fi
+
+  say "  hook    core.hooksPath = .githooks"
+  run git -C "$REPO" config core.hooksPath .githooks
+}
+
 install_noctalia() {
   local dest="$CONFIG/noctalia-kwe/noctalia-full-config.toml"
   local live="$STATE/noctalia-kwe/settings.toml"
@@ -335,6 +358,7 @@ main() {
   fi
 
   install_config_links
+  install_git_hooks
 
   if ((INSTALL_OPENCODE)); then
     install_opencode

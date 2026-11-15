@@ -1,0 +1,155 @@
+#!/bin/sh
+# Reject staged credentials before they are committed.
+#
+# Scans the index for non-empty assignments to credential-like keys and for
+# well-known token formats. Empty placeholders such as api_key = "" are allowed,
+# so a sanitized export can still be committed. Uses sh + awk; no Python needed.
+#
+# Enable with: git config core.hooksPath .githooks
+# Bypass once with: git commit --no-verify
+
+set -u
+
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+cd "$root" || exit 0
+
+tmp=$(mktemp "${TMPDIR:-/tmp}/pre-commit.XXXXXX") || {
+    echo "pre-commit: cannot create a temporary file" >&2
+    exit 1
+}
+trap 'rm -f "$tmp"' 0 1 2 3 15
+
+AWK_PROGRAM=$(cat <<'AWK'
+BEGIN {
+    split("apikey apisecret apitoken accesstoken authtoken bearertoken refreshtoken sessiontoken clientsecret secret secretkey password passwd credential credentials token", a, " ")
+    for (i in a) secret[a[i]] = 1
+    split("true false 0 1 null nil none ~ [] {}", b, " ")
+    for (i in b) boolean[b[i]] = 1
+}
+
+function trim(s) {
+    sub(/\r$/, "", s)
+    sub(/^[ \t]+/, "", s)
+    sub(/[ \t]+$/, "", s)
+    return s
+}
+
+function is_placeholder(s,    t) {
+    t = tolower(s)
+    if (t == "none" || t == "null" || t == "nil" || t == "~") return 1
+    if (t == "changeme" || t == "change-me" || t == "placeholder" || t == "redacted" || t == "todo") return 1
+    if (t ~ /^x+$/ || t ~ /^\*+$/ || t ~ /^\.+$/) return 1
+    if (t ~ /^your[-_ ]/) return 1
+    if (t ~ /^<.*>$/) return 1
+    if (t ~ /^\$\{.*\}$/ || t ~ /^\$[a-z_]/) return 1
+    if (t ~ /^(env|file|secret|vault|op|keychain|secret-service):/) return 1
+    return 0
+}
+
+function value_set(raw,    v, quote, rest, out, i, c, escaped, pos, fence) {
+    v = trim(raw)
+    if (v == "") return 0
+    if (substr(v, 1, 3) == "\"\"\"" || substr(v, 1, 3) == "'''") {
+        fence = substr(v, 1, 3)
+        rest = substr(v, 4)
+        pos = index(rest, fence)
+        if (pos == 0) return 1
+        v = trim(substr(rest, 1, pos - 1))
+    } else if (substr(v, 1, 1) == "\"" || substr(v, 1, 1) == "'") {
+        quote = substr(v, 1, 1)
+        rest = substr(v, 2)
+        out = ""
+        escaped = 0
+        for (i = 1; i <= length(rest); i++) {
+            c = substr(rest, i, 1)
+            if (escaped) {
+                out = out c
+                escaped = 0
+            } else if (c == "\\" && quote == "\"") {
+                escaped = 1
+            } else if (c == quote) {
+                break
+            } else {
+                out = out c
+            }
+        }
+        v = trim(out)
+    } else {
+        sub(/[ \t]+#.*$/, "", v)
+        sub(/[ \t]+\/\/.*$/, "", v)
+        sub(/,$/, "", v)
+        v = trim(v)
+        if (tolower(v) in boolean) return 0
+    }
+    if (v == "") return 0
+    return !is_placeholder(v)
+}
+
+{
+    line = $0
+    s = line
+    sub(/^[ \t]+/, "", s)
+    sub(/^-[ \t]+/, "", s)
+    sub(/^export[ \t]+/, "", s)
+    if (substr(s, 1, 1) == "\"" || substr(s, 1, 1) == "'") s = substr(s, 2)
+    if (!match(s, /^[A-Za-z0-9_.-]+/)) next
+
+    key = substr(s, 1, RLENGTH)
+    rest = substr(s, RLENGTH + 1)
+    sub(/^\[[^]]*\][ \t]*/, "", rest)
+    sub(/^["']?[ \t]*/, "", rest)
+    if (substr(rest, 1, 1) != ":" && substr(rest, 1, 1) != "=") next
+    value = substr(rest, 2)
+
+    k = tolower(key)
+    gsub(/[_.-]/, "", k)
+    if (k in secret && value_set(value)) {
+        printf "%s:%d: %s has a non-empty value\n", path, NR, key
+        next
+    }
+
+    if (key ~ /^[A-Z0-9_]*(API_KEY|API_SECRET|API_TOKEN|ACCESS_TOKEN|AUTH_TOKEN|BEARER_TOKEN|REFRESH_TOKEN|SESSION_TOKEN|CLIENT_SECRET|SECRET_KEY|PASSWORD|PASSWD|CREDENTIAL|TOKEN|SECRET)$/ && value_set(value)) {
+        printf "%s:%d: %s has a non-empty value\n", path, NR, key
+        next
+    }
+
+    if (match(line, /sk-[A-Za-z0-9_-]+/) && RLENGTH >= 20) {
+        printf "%s:%d: token-like value (OpenAI-style key)\n", path, NR
+    } else if (match(line, /gh[pousr]_[A-Za-z0-9]+/) && RLENGTH >= 24) {
+        printf "%s:%d: token-like value (GitHub token)\n", path, NR
+    } else if (match(line, /xox[baprs]-[A-Za-z0-9-]+/) && RLENGTH >= 15) {
+        printf "%s:%d: token-like value (Slack token)\n", path, NR
+    } else if (match(line, /AKIA[0-9A-Z]+/) && RLENGTH >= 20) {
+        printf "%s:%d: token-like value (AWS access key)\n", path, NR
+    } else if (match(line, /AIza[0-9A-Za-z_-]+/) && RLENGTH >= 34) {
+        printf "%s:%d: token-like value (Google API key)\n", path, NR
+    } else if (match(line, /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/) && RLENGTH >= 30) {
+        printf "%s:%d: token-like value (JWT)\n", path, NR
+    }
+}
+AWK
+)
+export AWK_PROGRAM
+
+git diff --cached --name-only --diff-filter=ACMR -z |
+xargs -0 -n1 sh -c '
+    path=${1-}
+    [ -n "$path" ] || exit 0
+    git show ":./$path" 2>/dev/null | grep -Iq . || exit 0
+    git show ":./$path" 2>/dev/null | awk -v path="$path" "$AWK_PROGRAM"
+' sh > "$tmp"
+status=$?
+
+if [ "$status" -ne 0 ]; then
+    echo "pre-commit: secret scan failed" >&2
+    exit 1
+fi
+
+if [ -s "$tmp" ]; then
+    echo "pre-commit: possible secret(s) in staged files:" >&2
+    sed 's/^/  /' "$tmp" >&2
+    echo "Remove the value or use an empty/reference placeholder. Bypass once with: git commit --no-verify" >&2
+    exit 1
+fi
+
+exit 0
