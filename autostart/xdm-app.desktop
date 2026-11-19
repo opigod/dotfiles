@@ -1,0 +1,8 @@
+[Desktop Entry]
+Hidden=true
+Type=Application
+Name=Xtreme Download Manager
+Exec=/opt/xdm-app/bin/xdm-app --minimized
+Icon=xdm-app
+Terminal=false
+X-GNOME-Autostart-enabled=true

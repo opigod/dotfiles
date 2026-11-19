@@ -30,6 +30,11 @@ KeyboardBacklightToggle=none,none,Toggle Keyboard Backlight
 KeyboardBacklightUp=Keyboard Brightness Up,Keyboard Brightness Up,Keyboard Backlight Up
 _k_friendly_name=Brightness
 
+[com.onepassword.OnePassword]
+AFA9380D94EAFD3A6A4DC3589C1C7BE3-=none,none,1Password shortcut:\s
+E3E2E9FEEA5EFDE76498FCB20084567E-Ctrl+Shift+Space=none,Ctrl+Shift+Space,1Password shortcut: Ctrl+Shift+Space
+_k_friendly_name=1Password
+
 [custom-commands]
 _k_friendly_name=Custom Commands
 cmd-1=Meta+T,none,ghostty

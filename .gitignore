@@ -2,3 +2,16 @@
 kineticwe/kdeglobals
 AGENTS.md
 opencode/AGENTS.md
+
+# DMS runtime state and the Wallhaven API key (never track these)
+dms/plugin_settings.json
+dms/plugins/
+dms/.firstlaunch
+dms/.changelog-2.1
+
+# Generated DMS Hyprland backups
+hypr/.dms-backups/
+
+# Local fish state and generated completions
+fish/fish_variables
+fish/completions/bun.fish

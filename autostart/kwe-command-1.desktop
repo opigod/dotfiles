@@ -1,0 +1,7 @@
+[Desktop Entry]
+Hidden=true
+Type=Application
+Name=kwalletd6
+Exec=kwalletd6
+Terminal=false
+X-KineticWE-Autostart-Command=true

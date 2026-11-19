@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "dankKDEConnect": {
+      "repo": "https://github.com/duxlabs-dev/dux-plugins",
+      "path": "DankKDEConnect",
+      "commit": "7a964dad725964550734e43dbbcf88c72829d847"
+    },
+    "wallhavenCarousel": {
+      "repo": "https://github.com/alicercedigital/wallhaven-carousel",
+      "commit": "a2f61b2d0bfa6fb569cabb40d479c957111a5be7"
+    }
+  }
+}

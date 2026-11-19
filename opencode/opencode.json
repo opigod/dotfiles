@@ -5,5 +5,8 @@
     "opencode-skills-tui",
     "@lidtop/opencode-cost",
     "opencode-plugin-deepseek-peak"
+  ],
+  "disabled_providers": [
+    "unrestricted"
   ]
 }

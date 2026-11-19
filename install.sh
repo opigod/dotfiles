@@ -122,6 +122,15 @@ copy_file() {
 install_config_links() {
   say "Config symlinks"
   link_path "$REPO/ghostty" "$CONFIG/ghostty"
+  link_path "$REPO/hypr" "$CONFIG/hypr"
+  link_path "$REPO/dms" "$CONFIG/dms"
+  link_path "$REPO/alacritty" "$CONFIG/alacritty"
+  link_path "$REPO/fish" "$CONFIG/fish"
+  link_path "$REPO/autostart" "$CONFIG/autostart"
+  link_path "$REPO/xsettingsd" "$CONFIG/xsettingsd"
+  link_path "$REPO/environment.d/90-dms.conf" "$CONFIG/environment.d/90-dms.conf"
+  link_path "$REPO/mimeapps.list" "$CONFIG/mimeapps.list"
+  # KineticWE/Noctalia remain tracked as a legacy session.
   link_path "$REPO/kineticwe" "$CONFIG/kineticwe"
   link_path "$REPO/nvim" "$CONFIG/nvim"
   link_path "$REPO/zed-stuff/zed" "$CONFIG/zed"
@@ -156,7 +165,7 @@ install_noctalia() {
   local dest="$CONFIG/noctalia-kwe/noctalia-full-config.toml"
   local live="$STATE/noctalia-kwe/settings.toml"
 
-  say "Noctalia"
+  say "Noctalia (legacy KineticWE session)"
   if [[ -f "$live" ]] && ((!FORCE)); then
     say "  skip    $dest (live settings exist in $live and override this base layer)"
     return 0
@@ -165,7 +174,7 @@ install_noctalia() {
 }
 
 install_lsfg() {
-  say "Lossless Scaling frame generation"
+  say "Lossless Scaling frame generation (legacy KineticWE session)"
   copy_file "$REPO/kineticwe/lsfg-vk/conf.toml" "$CONFIG/lsfg-vk/conf.toml"
 }
 
@@ -377,7 +386,7 @@ main() {
   if ((DRY_RUN)); then
     say "Dry run finished. Re-run without --dry-run to apply."
   else
-    say "Done. Log out and back in so KineticWE, Noctalia, and Zed reload the config."
+    say "Done. Log out and back in so Hyprland, DMS, and Zed reload the config."
     say "OpenCode picks up its config the next time it starts."
   fi
 }
